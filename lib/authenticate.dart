@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:one_to_one_chatapp/homescreen.dart';
 import 'package:one_to_one_chatapp/loginpage.dart';
+
 class Authenticate extends StatelessWidget {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
@@ -13,9 +14,8 @@ class Authenticate extends StatelessWidget {
       return HomeScreen(
         userName: firebaseAuth.currentUser!.displayName,
       );
-    }
-    else {
-      return LoginPage();
+    } else {
+      return const LoginPage();
     }
   }
 }
