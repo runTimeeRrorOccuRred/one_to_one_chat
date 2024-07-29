@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:one_to_one_chatapp/chat/chatroom.dart';
 import 'package:one_to_one_chatapp/loginpage.dart';
 import 'package:one_to_one_chatapp/methods.dart';
 
 class HomeScreen extends StatefulWidget {
-  String? userName;
+  final String? userName;
   HomeScreen({this.userName, Key? key}) : super(key: key);
 
   @override
@@ -14,141 +13,167 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  //FirebaseAuth firebaseAuth=FirebaseAuth.instance;
-  Map<String, dynamic>? userMap;
-  bool isLoading = false;
-  final TextEditingController search = TextEditingController();
-  String chatRoomId(String? user1, user2) {
-    if (user1 != null) {
-      if (user1[0].toLowerCase().codeUnits[0] >
-          user2.toLowerCase().codeUnits[0]) {
-        return "$user1$user2";
-      } else {
-        return "$user2$user1";
-      }
-    } else {
-      return "";
-    }
+  late Stream<QuerySnapshot> userStream;
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    userStream = FirebaseFirestore.instance.collection('users').snapshots();
   }
 
-  void onSearch() async {
+  void onSearch() {
     setState(() {
-      isLoading = true;
-    });
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-    await firebaseFirestore
-        .collection('users')
-        .where("email", isEqualTo: search.text)
-        .get()
-        .then((value) {
-      if (value != null) {
-        print(value);
-        setState(() {
-          userMap = value.docs[0].data();
-          isLoading = false;
-        });
-        print(userMap);
+      if (searchController.text.isEmpty) {
+        userStream = FirebaseFirestore.instance.collection('users').snapshots();
       } else {
-        print("User not found");
-        setState(() {
-          isLoading = false;
-        });
+        userStream = FirebaseFirestore.instance
+            .collection('users')
+            .where('name', isEqualTo: searchController.text)
+            .snapshots();
       }
     });
+  }
+
+  String chatRoomId(String? user1, String user2) {
+    if (user1 != null) {
+      return user1[0].toLowerCase().codeUnits[0] >
+              user2.toLowerCase().codeUnits[0]
+          ? "$user1$user2"
+          : "$user2$user1";
+    }
+    return "";
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Home Screen"),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  logOut(context);
-                },
-                icon: const Icon(Icons.exit_to_app))
-          ],
+      appBar: AppBar(
+        title: const Text(
+          "TalkNest",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        body: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  SizedBox(
-                    height: size.height / 20,
+        centerTitle: true,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepPurple, Colors.purpleAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: IconButton(
+              onPressed: () {
+                logOut(context);
+              },
+              icon: const Icon(
+                Icons.exit_to_app,
+                color: Colors.white,
+              ),
+              tooltip: 'Log Out',
+            ),
+          )
+        ],
+      ),
+      body: Container(
+        color: Colors.grey[100],
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextFormField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: onSearch,
                   ),
-                  Container(
-                    height: size.height / 14,
-                    width: size.width,
-                    alignment: Alignment.center,
-                    child: Container(
-                      height: size.height / 14,
-                      width: size.width / 1.2,
-                      child: TextField(
-                        controller: search,
-                        decoration: InputDecoration(
-                            hintText: "Search",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10))),
-                      ),
-                    ),
+                  prefixIcon: searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            searchController.clear();
+                            onSearch();
+                          },
+                        )
+                      : null,
+                  hintText: "Search by name",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                  SizedBox(
-                    height: size.height / 30,
-                  ),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          iconColor: Colors.indigo.withOpacity(0.7),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30))),
-                      onPressed: () {
-                        onSearch();
-                      },
-                      child: const Text(
-                        "Search",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      )),
-                  SizedBox(
-                    height: size.height / 50,
-                  ),
-                  userMap != null
-                      ? ListTile(
-                          onTap: () {
-                            print(widget.userName);
-                            String roomId =
-                                chatRoomId(widget.userName, userMap!['name']);
-                            Navigator.pushReplacement(
+                  filled: false,
+                  fillColor: Colors.grey[200],
+                ),
+              ),
+            ),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: userStream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.data!.docs.isEmpty) {
+                    return Center(child: Text("No Users Found"));
+                  } else {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        final user = snapshot.data!.docs[index].data()
+                            as Map<String, dynamic>;
+
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 16),
+                          elevation: 3,
+                          child: ListTile(
+                            onTap: () {
+                              String roomId =
+                                  chatRoomId(widget.userName, user['name']);
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ChatRoom(
-                                          userMap: userMap,
-                                          chatRoomId: roomId,
-                                        )));
-                            print("working");
-                          },
-                          leading: const Icon(
-                            Icons.account_box,
-                            color: Colors.black,
+                                  builder: (context) => ChatRoom(
+                                    userMap: user,
+                                    chatRoomId: roomId,
+                                  ),
+                                ),
+                              );
+                            },
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.blueAccent,
+                              child: Text(
+                                user['name'][0].toUpperCase(),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            title: Text(
+                              user['name'],
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(user['email']),
                           ),
-                          title: Text(
-                            userMap?['name'],
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          subtitle: Text(userMap?['email']),
-                          trailing: const Icon(
-                            Icons.chat,
-                            color: Colors.black,
-                          ),
-                        )
-                      : Container()
-                ],
-              ));
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

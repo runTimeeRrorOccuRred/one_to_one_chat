@@ -21,14 +21,7 @@ class _LoginPageState extends State<LoginPage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                    Colors.white.withOpacity(0.8),
-                    Colors.white.withOpacity(0.8)
-                  ])),
+              decoration: BoxDecoration(color: Colors.deepPurple),
               child: Form(
                 key: formKey,
                 child: Column(
@@ -40,25 +33,28 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 40,
-                          color: Colors.black),
+                          color: Colors.white),
                     ),
                     const SizedBox(
                       height: 20,
                     ),
                     TextFormField(
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                           hintText: 'Enter your email',
                           hintStyle: Theme.of(context)
                               .textTheme
                               .bodyMedium!
-                              .copyWith(color: Colors.grey.shade400),
-                          prefixIcon: Icon(
+                              .copyWith(color: Colors.white),
+                          prefixIcon: const Icon(
                             Icons.email,
-                            color: Colors.grey.shade400,
+                            color: Colors.white,
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.black),
+                            borderSide: const BorderSide(color: Colors.white),
                           )),
                       controller: emailController,
                       validator: (value) {
@@ -67,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     TextFormField(
@@ -77,14 +73,15 @@ class _LoginPageState extends State<LoginPage> {
                           hintStyle: Theme.of(context)
                               .textTheme
                               .bodyMedium!
-                              .copyWith(color: Colors.grey.shade400),
-                          prefixIcon: Icon(
+                              .copyWith(color: Colors.white),
+                          prefixIcon: const Icon(
                             Icons.lock,
-                            color: Colors.grey.shade400,
+                            color: Colors.white,
                           ),
                           enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(color: Colors.black))),
+                              borderSide:
+                                  const BorderSide(color: Colors.white))),
                       controller: passwordController,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -100,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: 50,
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurpleAccent,
                               iconColor: Colors.indigo.withOpacity(0.7),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30))),
@@ -137,11 +135,11 @@ class _LoginPageState extends State<LoginPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "Dont have an account?",
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: Colors.white),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         GestureDetector(
@@ -151,12 +149,12 @@ class _LoginPageState extends State<LoginPage> {
                                   MaterialPageRoute(
                                       builder: (context) => SignUpPage()));
                             },
-                            child: Text(
+                            child: const Text(
                               "SignUp",
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: Colors.white,
                                   decoration: TextDecoration.underline,
-                                  decorationColor: Colors.black),
+                                  decorationColor: Colors.white),
                             )),
                         SizedBox(
                           height: 20,

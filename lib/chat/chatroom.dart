@@ -41,85 +41,121 @@ class _ChatRoomState extends State<ChatRoom> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
-        actions: const [
-          Icon(
-            Icons.video_call,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.arrow_back,
             color: Colors.white,
           ),
-          SizedBox(width: 10),
-          Icon(
-            Icons.phone,
-            color: Colors.white,
-          ),
-        ],
+        ),
         title: Text(
           widget.userMap!['name'],
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: firebaseFirestore
-                  .collection('chatroom')
-                  .doc(widget.chatRoomId)
-                  .collection('chats')
-                  .orderBy('time', descending: false)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      DocumentSnapshot documentSnapshot =
-                          snapshot.data!.docs[index];
-                      String messageId = documentSnapshot.id;
-                      Map<String, dynamic> map = snapshot.data!.docs[index]
-                          .data() as Map<String, dynamic>;
-                      return messageTile(size, map, messageId, context);
-                    },
-                  );
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepPurple, Colors.purpleAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.attach_file, color: Colors.deepPurple),
-                  onPressed: () {},
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    child: TextField(
-                      controller: message,
-                      decoration: const InputDecoration(
-                        hintText: "Type a message",
-                        border: InputBorder.none,
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.video_call,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              // Handle video call action
+            },
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.phone,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              // Handle phone call action
+            },
+          ),
+          const SizedBox(width: 10), // Add some space at the end if needed
+        ],
+      ),
+      body: Container(
+        color: Colors.grey[100],
+        child: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: firebaseFirestore
+                    .collection('chatroom')
+                    .doc(widget.chatRoomId)
+                    .collection('chats')
+                    .orderBy('time', descending: false)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot documentSnapshot =
+                            snapshot.data!.docs[index];
+                        String messageId = documentSnapshot.id;
+                        Map<String, dynamic> map = snapshot.data!.docs[index]
+                            .data() as Map<String, dynamic>;
+                        return messageTile(size, map, messageId, context);
+                      },
+                    );
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon:
+                        const Icon(Icons.attach_file, color: Colors.deepPurple),
+                    onPressed: () {},
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      child: TextField(
+                        controller: message,
+                        decoration: const InputDecoration(
+                          hintText: "Type a message",
+                          border: InputBorder.none,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send, color: Colors.deepPurple),
-                  onPressed: onSendMessage,
-                ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.send, color: Colors.deepPurple),
+                    onPressed: onSendMessage,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

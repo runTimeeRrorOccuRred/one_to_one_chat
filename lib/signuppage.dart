@@ -19,16 +19,9 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                    Colors.white.withOpacity(0.8),
-                    Colors.white.withOpacity(0.8)
-                  ])),
+              decoration: const BoxDecoration(color: Colors.deepPurple),
               child: Form(
                 key: formKey,
                 child: SingleChildScrollView(
@@ -37,12 +30,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Sign Up',
+                        const Text('Sign Up',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 40,
-                                color: Colors.black)),
-                        SizedBox(
+                                color: Colors.white)),
+                        const SizedBox(
                           height: 20,
                         ),
                         TextFormField(
@@ -51,14 +44,15 @@ class _SignUpPageState extends State<SignUpPage> {
                               hintStyle: Theme.of(context)
                                   .textTheme
                                   .bodyMedium!
-                                  .copyWith(color: Colors.grey.shade400),
-                              prefixIcon: Icon(
+                                  .copyWith(color: Colors.white),
+                              prefixIcon: const Icon(
                                 Icons.person,
-                                color: Colors.grey.shade400,
+                                color: Colors.white,
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.black),
+                                borderSide:
+                                    const BorderSide(color: Colors.white),
                               )),
                           controller: nameController,
                           validator: (value) {
@@ -67,7 +61,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             }
                           },
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         TextFormField(
@@ -76,14 +70,15 @@ class _SignUpPageState extends State<SignUpPage> {
                               hintStyle: Theme.of(context)
                                   .textTheme
                                   .bodyMedium!
-                                  .copyWith(color: Colors.grey.shade400),
-                              prefixIcon: Icon(
+                                  .copyWith(color: Colors.white),
+                              prefixIcon: const Icon(
                                 Icons.email,
-                                color: Colors.grey.shade400,
+                                color: Colors.white,
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.black),
+                                borderSide:
+                                    const BorderSide(color: Colors.white),
                               )),
                           controller: emailController,
                           validator: (value) {
@@ -92,10 +87,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             }
                           },
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         TextFormField(
@@ -105,14 +97,15 @@ class _SignUpPageState extends State<SignUpPage> {
                               hintStyle: Theme.of(context)
                                   .textTheme
                                   .bodyMedium!
-                                  .copyWith(color: Colors.grey.shade400),
-                              prefixIcon: Icon(
+                                  .copyWith(color: Colors.white),
+                              prefixIcon: const Icon(
                                 Icons.lock,
-                                color: Colors.grey.shade400,
+                                color: Colors.white,
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.black),
+                                borderSide:
+                                    const BorderSide(color: Colors.white),
                               )),
                           controller: passwordController,
                           validator: (value) {
@@ -121,12 +114,13 @@ class _SignUpPageState extends State<SignUpPage> {
                             }
                           },
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         SizedBox(
                           width: MediaQuery.of(context).size.width,
                           height: 50,
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.deepPurpleAccent,
                                   iconColor: Colors.indigo.withOpacity(0.7),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30))),
@@ -172,7 +166,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           children: [
                             const Text(
                               'Already have an account',
-                              style: TextStyle(color: Colors.black),
+                              style: TextStyle(color: Colors.white),
                             ),
                             const SizedBox(
                               width: 10,
@@ -182,12 +176,13 @@ class _SignUpPageState extends State<SignUpPage> {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => LoginPage()));
+                                          builder: (context) =>
+                                              const LoginPage()));
                                 },
                                 child: const Text(
                                   "Login",
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: Colors.white,
                                       decoration: TextDecoration.underline,
                                       decorationColor: Colors.white),
                                 ))
