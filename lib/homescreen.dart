@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:one_to_one_chatapp/chat/chatroom.dart';
-import 'package:one_to_one_chatapp/loginpage.dart';
 import 'package:one_to_one_chatapp/methods.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -94,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: TextFormField(
                 controller: searchController,
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.search),
                     onPressed: onSearch,
@@ -122,9 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 stream: userStream,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.data!.docs.isEmpty) {
-                    return Center(child: Text("No Users Found"));
+                    return const Center(child: Text("No Users Found"));
                   } else {
                     return ListView.builder(
                       itemCount: snapshot.data!.docs.length,
