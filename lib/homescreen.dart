@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:one_to_one_chatapp/chat/chatroom.dart';
 import 'package:one_to_one_chatapp/methods.dart';
@@ -11,14 +12,33 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late Stream<QuerySnapshot> userStream;
   final TextEditingController searchController = TextEditingController();
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
     userStream = FirebaseFirestore.instance.collection('users').snapshots();
+    WidgetsBinding.instance.addObserver(this);
+    setStatus('Online');
+  }
+
+  void setStatus(String status) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(firebaseAuth.currentUser!.uid)
+        .update({'status': status});
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setStatus('Online');
+    } else {
+      setStatus('Offline');
+    }
   }
 
   void onSearch() {
@@ -136,33 +156,39 @@ class _HomeScreenState extends State<HomeScreen> {
                               vertical: 8, horizontal: 16),
                           elevation: 3,
                           child: ListTile(
-                            onTap: () {
-                              String roomId =
-                                  chatRoomId(widget.userName, user['name']);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ChatRoom(
-                                    userMap: user,
-                                    chatRoomId: roomId,
+                              onTap: () {
+                                String roomId =
+                                    chatRoomId(widget.userName, user['name']);
+                                print(roomId);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatRoom(
+                                      userMap: user,
+                                      chatRoomId: roomId,
+                                    ),
                                   ),
+                                );
+                              },
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.blueAccent,
+                                child: Text(
+                                  user['name'][0].toUpperCase(),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
-                              );
-                            },
-                            leading: CircleAvatar(
-                              backgroundColor: Colors.blueAccent,
-                              child: Text(
-                                user['name'][0].toUpperCase(),
-                                style: const TextStyle(color: Colors.white),
                               ),
-                            ),
-                            title: Text(
-                              user['name'],
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(user['email']),
-                          ),
+                              title: Text(
+                                user['name'],
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(user['email']),
+                              trailing: (user['status'] == "Online")
+                                  ? const CircleAvatar(
+                                      radius: 5,
+                                      backgroundColor: Colors.green,
+                                    )
+                                  : const SizedBox()),
                         );
                       },
                     );

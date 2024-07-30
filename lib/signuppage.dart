@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:one_to_one_chatapp/loginpage.dart';
 import 'package:one_to_one_chatapp/methods.dart';
@@ -14,7 +16,13 @@ class _SignUpPageState extends State<SignUpPage> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   bool isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +47,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           height: 20,
                         ),
                         TextFormField(
+                          autocorrect: false,
+                          enableSuggestions: false,
+                          style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                               hintText: 'Enter your name',
                               hintStyle: Theme.of(context)
@@ -65,6 +76,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           height: 20,
                         ),
                         TextFormField(
+                          autocorrect: false,
+                          enableSuggestions: false,
+                          style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                               hintText: 'Enter your email',
                               hintStyle: Theme.of(context)
@@ -91,6 +105,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           height: 20,
                         ),
                         TextFormField(
+                          style: const TextStyle(color: Colors.white),
                           obscureText: true,
                           decoration: InputDecoration(
                               hintText: 'Enter your password',

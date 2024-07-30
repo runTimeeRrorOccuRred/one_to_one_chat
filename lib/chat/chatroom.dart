@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -17,6 +21,7 @@ class _ChatRoomState extends State<ChatRoom> {
   final TextEditingController message = TextEditingController();
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  final ImagePicker _imagePicker = ImagePicker();
 
   void onSendMessage() async {
     if (message.text.isNotEmpty) {
@@ -36,6 +41,38 @@ class _ChatRoomState extends State<ChatRoom> {
     }
   }
 
+  Future<void> uploadImage() async {
+    final XFile? image =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      final fileName = image.name;
+      final destination = 'chatImages/$fileName';
+
+      try {
+        final ref = FirebaseStorage.instance.ref(destination);
+        await ref.putFile(File(image.path));
+
+        final imageUrl = await ref.getDownloadURL();
+
+        Map<String, dynamic> imageMessage = {
+          "sendby": firebaseAuth.currentUser!.displayName,
+          "message": "",
+          "imageUrl": imageUrl,
+          "time": FieldValue.serverTimestamp(),
+        };
+
+        await firebaseFirestore
+            .collection('chatroom')
+            .doc(widget.chatRoomId)
+            .collection('chats')
+            .add(imageMessage);
+      } catch (e) {
+        print("Failed to upload image: $e");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -50,13 +87,27 @@ class _ChatRoomState extends State<ChatRoom> {
             color: Colors.white,
           ),
         ),
-        title: Text(
-          widget.userMap!['name'],
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+        title: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(widget.userMap!['uid'])
+              .snapshots(),
+          builder: (context, snapshot) {
+            return Column(
+              children: [
+                Text(
+                  widget.userMap!['name'],
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w600),
+                ),
+                (snapshot.hasData)
+                    ? Text(snapshot.data!['status'],
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 15))
+                    : const Text("Unavailabe")
+              ],
+            );
+          },
         ),
         centerTitle: true,
         flexibleSpace: Container(
@@ -129,7 +180,9 @@ class _ChatRoomState extends State<ChatRoom> {
                   IconButton(
                     icon:
                         const Icon(Icons.attach_file, color: Colors.deepPurple),
-                    onPressed: () {},
+                    onPressed: () {
+                      uploadImage();
+                    },
                   ),
                   Expanded(
                     child: Container(
@@ -213,13 +266,15 @@ class _ChatRoomState extends State<ChatRoom> {
             crossAxisAlignment:
                 isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
-              Text(
-                map['message'],
-                style: TextStyle(
-                  color: isMe ? Colors.white : Colors.black,
-                  fontSize: 16,
-                ),
-              ),
+              map['imageUrl'] != null
+                  ? Image.network(map['imageUrl'])
+                  : Text(
+                      map['message'],
+                      style: TextStyle(
+                        color: isMe ? Colors.white : Colors.black,
+                        fontSize: 16,
+                      ),
+                    ),
               Text(
                 map['time'] != null
                     ? DateFormat('hh:mm a').format(map['time'].toDate())

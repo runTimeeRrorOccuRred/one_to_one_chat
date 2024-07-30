@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:one_to_one_chatapp/homescreen.dart';
 import 'package:one_to_one_chatapp/methods.dart';
@@ -15,13 +16,14 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool isLoading = false;
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Container(
-              decoration: BoxDecoration(color: Colors.deepPurple),
+              decoration: const BoxDecoration(color: Colors.deepPurple),
               child: Form(
                 key: formKey,
                 child: Column(
@@ -67,6 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: 20,
                     ),
                     TextFormField(
+                      style: const TextStyle(color: Colors.white),
                       obscureText: true,
                       decoration: InputDecoration(
                           hintText: 'Enter your password',
@@ -117,7 +120,10 @@ class _LoginPageState extends State<LoginPage> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => HomeScreen()));
+                                          builder: (context) => HomeScreen(
+                                                userName: firebaseAuth
+                                                    .currentUser!.displayName,
+                                              )));
                                 } else {
                                   print("Login failed");
                                 }
