@@ -11,9 +11,9 @@ Future<User?> createAccount(String name, String email, String password) async {
             email: email, password: password))
         .user;
     if (user != null) {
+      user.updateProfile(displayName: name);
       print('Account created Successfully');
 
-      user.updateProfile(displayName: name);
       await firebaseFirestore
           .collection('users')
           .doc(firebaseAuth.currentUser!.uid)

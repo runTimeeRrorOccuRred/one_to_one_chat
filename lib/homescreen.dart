@@ -22,24 +22,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     userStream = FirebaseFirestore.instance.collection('users').snapshots();
     WidgetsBinding.instance.addObserver(this);
-    setStatus('Online');
+    // setStatus('Online');
   }
 
-  void setStatus(String status) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(firebaseAuth.currentUser!.uid)
-        .update({'status': status});
-  }
+  // void setStatus(String status) async {
+  //   await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(firebaseAuth.currentUser!.uid)
+  //       .update({'status': status});
+  // }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      setStatus('Online');
-    } else {
-      setStatus('Offline');
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.resumed) {
+  //     setStatus('Online');
+  //   } else {
+  //     setStatus('Offline');
+  //   }
+  // }
 
   void onSearch() {
     setState(() {

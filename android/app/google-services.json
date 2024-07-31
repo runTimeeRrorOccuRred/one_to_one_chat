@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "948197214666",
-    "project_id": "chatapplication-69390",
-    "storage_bucket": "chatapplication-69390.appspot.com"
+    "project_number": "1065214532556",
+    "project_id": "talk-nest-e44ce",
+    "storage_bucket": "talk-nest-e44ce.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:948197214666:android:b5b81ba2402850f6bce733",
+        "mobilesdk_app_id": "1:1065214532556:android:33367047c6a44e1fa59b69",
         "android_client_info": {
           "package_name": "com.example.one_to_one_chatapp"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAtZHpuVA1G5Gt7ByB74Fd-kWYNFhxswJY"
+          "current_key": "AIzaSyD3Y-50AcHAzzPObIPbKdzM0QbEVov1utg"
         }
       ],
       "services": {

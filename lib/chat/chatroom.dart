@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
+
 import 'package:flutter/material.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -24,13 +24,13 @@ class _ChatRoomState extends State<ChatRoom> {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> requestPermissions() async {
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      // Request storage permission
-      await Permission.storage.request();
-    }
-  }
+  // Future<void> requestPermissions() async {
+  //   var status = await Permission.storage.status;
+  //   if (!status.isGranted) {
+  //     // Request storage permission
+  //     await Permission.storage.request();
+  //   }
+  // }
 
   void onSendMessage() async {
     if (message.text.isNotEmpty) {
@@ -50,44 +50,44 @@ class _ChatRoomState extends State<ChatRoom> {
     }
   }
 
-  Future<void> uploadImage() async {
-    await requestPermissions();
-    if (await Permission.storage.request().isGranted) {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+  // Future<void> uploadImage() async {
+  //   await requestPermissions();
+  //   if (await Permission.storage.request().isGranted) {
+  //     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
 
-      if (image != null) {
-        final fileName = image.name;
-        final destination = 'chatImages/$fileName';
+  //     if (image != null) {
+  //       final fileName = image.name;
+  //       final destination = 'chatImages/$fileName';
 
-        try {
-          final ref = FirebaseStorage.instance.ref(destination);
-          final uploadTask = ref.putFile(File(image.path));
+  //       try {
+  //         final ref = FirebaseStorage.instance.ref(destination);
+  //         final uploadTask = ref.putFile(File(image.path));
 
-          await uploadTask.whenComplete(() async {
-            final imageUrl = await ref.getDownloadURL();
+  //         await uploadTask.whenComplete(() async {
+  //           final imageUrl = await ref.getDownloadURL();
 
-            Map<String, dynamic> imageMessage = {
-              "sendby": firebaseAuth.currentUser!.displayName,
-              "message": "",
-              "imageUrl": imageUrl,
-              "time": FieldValue.serverTimestamp(),
-            };
+  //           Map<String, dynamic> imageMessage = {
+  //             "sendby": firebaseAuth.currentUser!.displayName,
+  //             "message": "",
+  //             "imageUrl": imageUrl,
+  //             "time": FieldValue.serverTimestamp(),
+  //           };
 
-            await firebaseFirestore
-                .collection('chatroom')
-                .doc(widget.chatRoomId)
-                .collection('chats')
-                .add(imageMessage);
-          });
-        } catch (e) {
-          print("Failed to upload image: $e");
-        }
-      }
-    } else {
-      // Handle the case when storage permission is not granted
-      print("Storage permission is not granted");
-    }
-  }
+  //           await firebaseFirestore
+  //               .collection('chatroom')
+  //               .doc(widget.chatRoomId)
+  //               .collection('chats')
+  //               .add(imageMessage);
+  //         });
+  //       } catch (e) {
+  //         print("Failed to upload image: $e");
+  //       }
+  //     }
+  //   } else {
+  //     // Handle the case when storage permission is not granted
+  //     print("Storage permission is not granted");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +196,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   IconButton(
                     icon:
                         const Icon(Icons.attach_file, color: Colors.deepPurple),
-                    onPressed: uploadImage,
+                    onPressed: () {},
                   ),
                   Expanded(
                     child: Container(
